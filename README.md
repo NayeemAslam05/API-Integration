@@ -2,7 +2,7 @@
 
 A clickable prototype of a **human-in-the-loop guarded agentic solution** that turns an app's API documentation into tested integration code. It was built for a product assignment, with Calendly as the example app.
 
-**Live demo:** https://nayeemaslam05.github.io/ai-integration-builder-prototype/
+**Live demo:** https://nayeemaslam05.github.io/API-Integration/
 
 ## What it shows
 
@@ -32,4 +32,4 @@ python3 -m http.server 8000
 
 ## Credits
 
-Built with [Vue 3](https://vuejs.org) (MIT, bundled in `vendor/`).
+Built with [Vue 3](https://vuejs.org) (MIT), loaded from the jsDelivr CDN.
