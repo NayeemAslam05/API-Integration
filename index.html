@@ -1,0 +1,1353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Integration Builder · Prototype</title>
+<meta name="description" content="Clickable prototype of a human-in-the-loop guarded agentic solution that turns API docs into tested integration code.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%236D28D9'/%3E%3Cpath d='M12 5l1.4 3.6 3.6 1.4-3.6 1.4L12 15l-1.4-3.6L7 10l3.6-1.4z' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F6F9;font-family:Inter,system-ui,sans-serif;color:#111827;font-size:14px;line-height:1.5}
+*{box-sizing:border-box}
+h1,h2,h3{font-family:'Space Grotesk',Inter,sans-serif;margin:0;letter-spacing:-0.01em}
+p{margin:0}
+a{color:#6D28D9}a:hover{color:#5B21B6}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:10px;border:1px solid #D1D5DB;background:#fff;color:#111827;font:600 14px Inter,sans-serif;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F3F4F6}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:#6D28D9;border-color:#6D28D9;color:#fff}
+.btn-primary:hover{background:#5B21B6}
+.btn-primary:disabled:hover{background:#6D28D9}
+.btn-ghost{border-color:transparent;background:transparent;color:#6D28D9;padding:0 10px}
+.btn-ghost:hover{background:#F3EEFF}
+.btn-sm{min-height:36px;padding:0 12px;font-size:13px}
+.linkbtn{background:none;border:0;padding:0;color:#6D28D9;font:600 13px Inter,sans-serif;cursor:pointer;text-decoration:underline;min-height:24px}
+.card{background:#fff;border:1px solid #E5E7EB;border-radius:16px;padding:28px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font:600 12px Inter,sans-serif;background:#F3EEFF;color:#6D28D9;white-space:nowrap}
+.chip-ok{background:#E7F6EE;color:#0B6B42}
+.chip-warn{background:#FEF3E2;color:#92400E}
+.chip-bad{background:#FDECE7;color:#A3360F}
+.chip-mute{background:#F3F4F6;color:#374151}
+.chip-dark{background:#111827;color:#fff}
+.method{font:600 11px 'JetBrains Mono',monospace;padding:3px 8px;border-radius:6px;background:#E7F6EE;color:#0B6B42}
+.method-w{background:#F3F4F6;color:#4B5563}
+.ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.muted{color:#4B5563}
+.small{font-size:13px}
+.xs{font-size:12px}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.label{font:600 13px Inter,sans-serif;color:#374151;display:block;margin-bottom:6px}
+.input{width:100%;min-height:44px;padding:10px 12px;border:1px solid #D1D5DB;border-radius:10px;font:14px Inter,sans-serif;color:#111827;background:#fff}
+.input:focus{outline:2px solid #6D28D9;outline-offset:1px;border-color:#6D28D9}
+.st{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 8px;border-radius:999px;border:0;background:transparent;font:600 13px Inter,sans-serif;color:#4B5563;cursor:pointer}
+.st:hover{background:#fff}
+.st-done{color:#0B6B42;cursor:pointer}
+.st-done:hover{background:#E7F6EE}
+.st-cur{background:#fff;color:#111827;box-shadow:0 1px 3px rgba(17,24,39,.12)}
+.dot{width:24px;height:24px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:#E5E7EB;color:#374151;font-size:12px}
+.dot-done{background:#0B6B42;color:#fff}
+.dot-cur{background:#6D28D9;color:#fff}
+.opt{position:relative;text-align:left;display:flex;flex-direction:column;gap:14px;padding:28px;border-radius:16px;border:1px solid #E5E7EB;background:#fff}
+.opt-rec{border:2px solid #6D28D9;background:#F8F5FF}
+.tile{text-align:left;display:flex;flex-direction:column;gap:4px;padding:16px;border-radius:12px;border:1px solid #D1D5DB;background:#fff;cursor:pointer;font:inherit;color:inherit;min-height:44px}
+.tile:hover{border-color:#6D28D9}
+.tile-on{border:2px solid #6D28D9;background:#F8F5FF;padding:15px}
+.tile:disabled{cursor:not-allowed;background:#F9FAFB;border-style:dashed;color:#6B7280}
+.tile:disabled:hover{border-color:#D1D5DB}
+.ep{display:flex;gap:14px;align-items:flex-start;padding:16px;border-radius:12px;border:1px solid #E5E7EB;background:#fff}
+.ep-on{border-color:#C4B5FD;background:#FAF7FF}
+.box{width:22px;height:22px;border-radius:6px;border:2px solid #9CA3AF;display:inline-flex;align-items:center;justify-content:center;background:#fff;color:#fff;flex:none}
+.box-on{background:#6D28D9;border-color:#6D28D9}
+.togglebtn{background:none;border:0;padding:11px;margin:-11px;cursor:pointer;display:inline-flex}
+.grid-row{display:grid;grid-template-columns:150px minmax(200px,1.3fr) minmax(180px,1.2fr) 96px 130px;gap:14px;align-items:center;padding:14px 16px;border-top:1px solid #EEF0F3}
+.grid-head{border-top:0;background:#F9FAFB;font:600 12px Inter,sans-serif;color:#4B5563;text-transform:uppercase;letter-spacing:.04em}
+.row-flag{background:#FFFBF2}
+.row-new{background:#F6F2FF}
+.tab{min-height:44px;padding:0 16px;border:0;border-bottom:2px solid transparent;background:none;font:600 14px Inter,sans-serif;color:#4B5563;cursor:pointer}
+.tab-on{color:#111827;border-bottom-color:#6D28D9}
+.code{background:#0F172A;color:#E2E8F0;border-radius:12px;padding:18px 0;overflow-x:auto;font:13px/1.65 'JetBrains Mono',monospace}
+.codeline{white-space:pre;padding:0 20px}
+.cm{color:#94A3B8}
+.chk{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:10px}
+.chk-fail{background:#FDF2EE}
+.chk-pass{background:transparent}
+.bubble{padding:10px 14px;border-radius:12px;max-width:90%;font-size:13px}
+.bubble-ai{background:#F3F4F6;align-self:flex-start}
+.bubble-you{background:#6D28D9;color:#fff;align-self:flex-end}
+.sugg{border:1px solid #DDD3FE;background:#F8F5FF;color:#4C1D95;border-radius:999px;padding:8px 14px;font:500 13px Inter,sans-serif;cursor:pointer;min-height:40px;text-align:left}
+.sugg:hover{background:#F3EEFF}
+.rail{display:flex;gap:12px;align-items:flex-start;padding:10px 0;color:#4B5563}
+.rail-done{color:#111827}
+.rail-active{color:#111827}
+.ricon{width:24px;height:24px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;flex:none;border:2px solid #D1D5DB;background:#fff}
+.ricon-done{background:#0B6B42;border-color:#0B6B42;color:#fff}
+.ricon-active{border-color:#6D28D9}
+.pulse{width:8px;height:8px;border-radius:999px;background:#6D28D9}
+.note{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:10px;background:#FEF7EC;color:#7C2D12;font-size:13px}
+.note-info{background:#F5F1FF;color:#4C1D95}
+.note-ok{background:#ECF8F1;color:#0B5134}
+.stat{display:flex;flex-direction:column;gap:2px;padding:16px;border:1px solid #E5E7EB;border-radius:12px;background:#fff}
+.statnum{font:700 26px 'Space Grotesk',sans-serif}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;max-width:min(560px,90vw);box-shadow:0 8px 24px rgba(0,0,0,.2);z-index:10}
+.switch{width:44px;height:26px;border-radius:999px;border:0;background:#D1D5DB;position:relative;cursor:pointer;flex:none}
+.switch-on{background:#0B6B42}
+.knob{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:999px;background:#fff}
+.switch-on .knob{left:21px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin 1s linear infinite}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.fade{animation:fadein .35s ease both}
+</style>
+<style>[v-cloak]{display:none}</style>
+</head>
+<body>
+<div id="app" v-cloak></div>
+<script type="text/x-template" id="tpl">
+<div style="min-height: 100vh; display: flex; flex-direction: column">
+
+<header style="background: #fff; border-bottom: 1px solid #E5E7EB">
+  <div style="max-width: 1360px; margin: 0 auto; padding: 14px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+    <div style="display: flex; align-items: center; gap: 12px">
+      <div style="width: 38px; height: 38px; border-radius: 10px; background: #6D28D9; color: #fff; display: flex; align-items: center; justify-content: center">
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 20px; height: 20px"><path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7-4.7-1.8 4.7-1.8z"></path><path d="M19 15l.8 2.2 2.2.8-2.2.8L19 21l-.8-2.2-2.2-.8 2.2-.8z"></path></svg>
+      </div>
+      <div>
+        <div style="font: 700 16px 'Space Grotesk', sans-serif">Integration Builder</div>
+        <div class="muted xs">Integrations › New connector › {{ vm.appName }}</div>
+      </div>
+    </div>
+    <span class="chip chip-mute">Concept prototype · simulated data</span>
+  </div>
+</header>
+
+<template v-if="vm.showStepper">
+  <nav aria-label="Build steps" style="max-width: 1360px; width: 100%; margin: 0 auto; padding: 16px 24px 0; display: flex; flex-wrap: wrap; gap: 4px">
+    <template v-for="(s, i_s) in vm.steps" :key="i_s">
+      <button :class="s.cls" @click="s.click" :aria-current="s.current">
+        <span :class="s.dotCls">
+          <template v-if="s.done"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px; stroke-width: 3"><path d="M20 6 9 17l-5-5"></path></svg></template>
+          <template v-if="s.notDone">{{ s.num }}</template>
+        </span>
+        {{ s.label }}
+      </button>
+    </template>
+  </nav>
+</template>
+
+<main style="max-width: 1360px; width: 100%; margin: 0 auto; padding: 20px 24px 56px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+
+
+<template v-if="vm.isChoice">
+<section class="card fade" style="padding: 44px 40px; display: flex; flex-direction: column; gap: 32px; max-width: 1080px; width: 100%; margin: 24px auto 0">
+  <div style="text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center">
+    <h1 style="font-size: 34px">How do you want to build this connector?</h1>
+    <p class="muted" style="font-size: 16px; max-width: 640px">Start from the app's API docs and get a tested, ingestion-ready connector in minutes. No code, deployment or infrastructure.</p>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px">
+    <div class="opt opt-rec">
+      <span class="chip" style="position: absolute; top: -13px; left: 24px; background: #6D28D9; color: #fff">Recommended</span>
+      <div style="display: flex; gap: 14px; align-items: center">
+        <div style="width: 52px; height: 52px; border-radius: 14px; background: #E9E1FF; color: #6D28D9; display: flex; align-items: center; justify-content: center">
+          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 26px; height: 26px"><path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7-4.7-1.8 4.7-1.8z"></path><path d="M19 15l.8 2.2 2.2.8-2.2.8L19 21l-.8-2.2-2.2-.8 2.2-.8z"></path></svg>
+        </div>
+        <div>
+          <h2 style="font-size: 22px">Build with AI</h2>
+          <p class="muted">From API docs to a tested connector</p>
+        </div>
+      </div>
+      <p style="font-size: 15px">Give us the docs link and the data you need. The AI drafts auth, endpoints, pagination and field mapping, shows where each choice came from, and tests it before anything reaches production.</p>
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <div style="display: flex; gap: 10px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #6D28D9"><path d="M20 6 9 17l-5-5"></path></svg>Paste a docs link: HTML, PDF or Swagger/OpenAPI</div>
+        <div style="display: flex; gap: 10px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #6D28D9"><path d="M20 6 9 17l-5-5"></path></svg>Every AI choice links to its doc source</div>
+        <div style="display: flex; gap: 10px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #6D28D9"><path d="M20 6 9 17l-5-5"></path></svg>Tested on real data and approved before it goes live</div>
+      </div>
+      <div><button class="btn btn-primary" @click="vm.toSource">Start with AI <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"></path></svg></button></div>
+    </div>
+    <div class="opt">
+      <div style="display: flex; gap: 14px; align-items: center">
+        <div style="width: 52px; height: 52px; border-radius: 14px; background: #F3F4F6; color: #374151; display: flex; align-items: center; justify-content: center">
+          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 24px; height: 24px"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>
+        </div>
+        <div>
+          <h2 style="font-size: 22px">Build manually</h2>
+          <p class="muted">Fill in the wizard yourself</p>
+        </div>
+      </div>
+      <p style="font-size: 15px">Open the builder and configure auth, endpoints and mapping field by field. Best when you already know the API well.</p>
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <div style="display: flex; gap: 10px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #4B5563"><path d="M20 6 9 17l-5-5"></path></svg>Configure every field yourself</div>
+        <div style="display: flex; gap: 10px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #4B5563"><path d="M20 6 9 17l-5-5"></path></svg>No AI guesses to review</div>
+        <div style="display: flex; gap: 10px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #4B5563"><path d="M20 6 9 17l-5-5"></path></svg>Same tests and approval before production</div>
+      </div>
+      <div><button class="btn" @click="vm.manualToast">Open builder <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"></path></svg></button></div>
+    </div>
+  </div>
+  <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center">
+    <span class="muted small">Works with REST APIs that return JSON:</span>
+    <span class="chip chip-mute">API key</span>
+    <span class="chip chip-mute">HTTP Basic</span>
+    <span class="chip chip-mute">Bearer token</span>
+    <span class="chip chip-mute">OAuth 2.0</span>
+  </div>
+</section>
+</template>
+
+
+<template v-if="vm.isSource">
+<section class="card fade" style="display: flex; flex-direction: column; gap: 24px">
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <h2 style="font-size: 24px">Point us at the API docs</h2>
+    <p class="muted">The AI reads them, drafts the connector and shows where every choice came from.</p>
+  </div>
+
+  <div>
+    <label class="label" for="docs">API documentation</label>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap">
+      <input id="docs" class="input" style="flex: 1 1 320px; width: auto" :value="vm.docsUrl" @input="vm.onDocs">
+      <button class="btn" @click="vm.uploadToast">
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6"></path></svg>
+        Upload PDF or OpenAPI file
+      </button>
+    </div>
+    <p class="muted xs" style="margin-top: 10px">Accepts HTML pages, PDFs and Swagger/OpenAPI specs.</p>
+  </div>
+
+  <div>
+    <span class="label">What should the connector pull?</span>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px">
+      <template v-for="(n, i_n) in vm.needs" :key="i_n">
+        <button :class="n.cls" @click="n.toggle" :aria-pressed="n.pressed">
+          <span style="display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%">
+            <span style="font-weight: 600">{{ n.title }}</span>
+            <template v-if="n.on"><span class="box box-on"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px; stroke-width: 3"><path d="M20 6 9 17l-5-5"></path></svg></span></template>
+            <template v-if="n.offEnabled"><span class="box"></span></template>
+            <template v-if="n.disabled"><span class="chip chip-mute">Coming soon</span></template>
+          </span>
+          <span class="muted xs">{{ n.desc }}</span>
+        </button>
+      </template>
+      <button class="tile" disabled="disabled">
+        <span style="display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%"><span style="font-weight: 600">Expenses</span><span class="chip chip-mute">Coming soon</span></span>
+        <span class="xs">Spend data from the app</span>
+      </button>
+    </div>
+  </div>
+
+  <div>
+    <label class="label" for="hints">Hints for the AI <span class="muted" style="font-weight: 400">(optional)</span></label>
+    <textarea id="hints" class="input" rows="2" style="resize: vertical" placeholder="e.g. use API v2, or the users endpoint is /organization_memberships" :value="vm.hints" @input="vm.onHints"></textarea>
+  </div>
+
+  <template v-if="vm.isSupported">
+    <div style="border: 1px solid #E5E7EB; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap">
+        <span style="font-weight: 600">Pre-flight check</span>
+        <span class="chip chip-ok">Supported</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px">
+        <div class="small" style="display: flex; gap: 8px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #0B6B42"><path d="M20 6 9 17l-5-5"></path></svg>REST API with JSON responses</div>
+        <div class="small" style="display: flex; gap: 8px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #0B6B42"><path d="M20 6 9 17l-5-5"></path></svg>Auth: Bearer token, OAuth 2.0</div>
+        <div class="small" style="display: flex; gap: 8px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #0B6B42"><path d="M20 6 9 17l-5-5"></path></svg>Read endpoints for users found</div>
+        <div class="small" style="display: flex; gap: 8px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #0B6B42"><path d="M20 6 9 17l-5-5"></path></svg>Docs are public, no login needed</div>
+      </div>
+    </div>
+  </template>
+
+  <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-top: 1px solid #EEF0F3; padding-top: 20px">
+    <button class="btn" @click="vm.toChoice">Back</button>
+    <button class="btn btn-primary" @click="vm.startAnalyze">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7-4.7-1.8 4.7-1.8z"></path></svg>
+      Generate connector
+    </button>
+  </div>
+</section>
+</template>
+
+
+<template v-if="vm.isAnalyze">
+<section class="card fade" style="display: flex; flex-direction: column; gap: 20px">
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap">
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <h2 style="font-size: 24px">Reading Calendly's API docs</h2>
+      <p class="muted">At this stage the AI only reads public docs. None of your data is involved.</p>
+    </div>
+    <template v-if="vm.analyzing">
+      <span class="chip"><svg class="ic spin" viewBox="0 0 24 24" aria-hidden="true" style="width: 13px; height: 13px"><path d="M21 12a9 9 0 1 1-6.2-8.6"></path></svg>Working</span>
+    </template>
+    <template v-if="vm.analyzeDone">
+      <span class="chip chip-ok">Draft ready</span>
+    </template>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 4px; border: 1px solid #E5E7EB; border-radius: 12px; padding: 8px">
+    <template v-for="(t, i_t) in vm.trace" :key="i_t">
+      <div class="fade" style="display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px">
+        <template v-if="t.ok"><span class="ricon ricon-done" style="width: 22px; height: 22px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 12px; height: 12px; stroke-width: 3"><path d="M20 6 9 17l-5-5"></path></svg></span></template>
+        <template v-if="t.warn"><span class="ricon" style="width: 22px; height: 22px; background: #FEF3E2; border-color: #F3C99A; color: #B45309"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 12px; height: 12px; stroke-width: 3"><path d="M12 8v5M12 17h.01"></path></svg></span></template>
+        <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+          <span>{{ t.text }}</span>
+          <span class="muted xs" style="display: flex; gap: 6px; align-items: center">
+            <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 12px; height: 12px"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6"></path></svg>
+            Source: {{ t.src }}
+          </span>
+        </div>
+      </div>
+    </template>
+    <template v-if="vm.analyzing">
+      <div style="display: flex; gap: 12px; align-items: center; padding: 10px 12px" class="muted">
+        <svg class="ic spin" viewBox="0 0 24 24" aria-hidden="true" style="width: 20px; height: 20px; color: #6D28D9"><path d="M21 12a9 9 0 1 1-6.2-8.6"></path></svg>
+        Reading…
+      </div>
+    </template>
+  </div>
+
+  <template v-if="vm.analyzeDone">
+    <div class="fade" style="display: flex; flex-direction: column; gap: 16px">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px">
+        <div class="stat"><span class="statnum">5</span><span class="muted small">read endpoints found</span></div>
+        <div class="stat"><span class="statnum">3</span><span class="muted small">write endpoints blocked</span></div>
+        <div class="stat"><span class="statnum">7</span><span class="muted small">fields mapped</span></div>
+        <div class="stat"><span class="statnum" style="color: #B45309">2</span><span class="muted small">items need your review</span></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
+        <span class="muted xs">Model: Claude Sonnet 5.5, limited to the docs it retrieved. Every endpoint is checked against the spec, and any it can't find is dropped.</span>
+        <button class="btn btn-primary" @click="vm.toEndpoints">Review endpoints <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"></path></svg></button>
+      </div>
+    </div>
+  </template>
+</section>
+</template>
+
+
+<template v-if="vm.isEndpoints">
+<section class="card fade" style="display: flex; flex-direction: column; gap: 20px">
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <h2 style="font-size: 24px">Choose what to sync</h2>
+    <p class="muted">All endpoints are read-only (GET), and each links to the doc section it came from.</p>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 10px">
+    <template v-for="(e, i_e) in vm.eps" :key="i_e">
+      <div :class="e.cls">
+        <button class="togglebtn" @click="e.toggle" :aria-pressed="e.pressed" :aria-label="e.aria">
+          <template v-if="e.on"><span class="box box-on"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px; stroke-width: 3"><path d="M20 6 9 17l-5-5"></path></svg></span></template>
+          <template v-if="e.off"><span class="box"></span></template>
+        </button>
+        <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1">
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+            <span class="method">GET</span>
+            <span class="mono" style="font-size: 13px; font-weight: 500; word-break: break-all">{{ e.path }}</span>
+            <template v-if="e.locked"><span class="chip chip-mute">Required</span></template>
+            <template v-if="e.isAdded"><span class="chip">Added by your refinement</span></template>
+          </div>
+          <span>{{ e.purpose }}</span>
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+            <span class="muted xs" style="display: flex; gap: 6px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 12px; height: 12px"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6"></path></svg>Docs › {{ e.src }}</span>
+            <span :class="e.confCls">{{ e.conf }} confidence</span>
+          </div>
+          <template v-if="e.hasWarn">
+            <div class="note" style="margin-top: 4px">
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #B45309; margin-top: 2px"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg>
+              <span>{{ e.warn }}</span>
+            </div>
+          </template>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <div style="border: 1px dashed #D1D5DB; border-radius: 12px; padding: 18px; background: #FAFAFB; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; gap: 10px; align-items: center">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 18px; height: 18px"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+      <span style="font-weight: 600">Write actions are off</span>
+    </div>
+    <p class="muted small">Deprovisioning and invites can be switched on later, one action at a time, each needing admin approval and its own test.</p>
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap" class="muted small"><span class="method method-w">DELETE</span><span class="mono">/organization_memberships/{uuid}</span><span>Remove a user</span></div>
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap" class="muted small"><span class="method method-w">POST</span><span class="mono">/organizations/{uuid}/invitations</span><span>Invite a user</span></div>
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap" class="muted small"><span class="method method-w">DELETE</span><span class="mono">/organizations/{uuid}/invitations/{uuid}</span><span>Revoke an invite</span></div>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-top: 1px solid #EEF0F3; padding-top: 20px">
+    <button class="btn" @click="vm.toSource">Back</button>
+    <button class="btn btn-primary" @click="vm.toSchema">Continue with {{ vm.epCount }} endpoints <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"></path></svg></button>
+  </div>
+</section>
+</template>
+
+
+<template v-if="vm.isSchema">
+<section class="card fade" style="display: flex; flex-direction: column; gap: 18px">
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <h2 style="font-size: 24px">Approve the schema</h2>
+    <p class="muted">How Calendly's data maps to the standard user record every app shares. Sample values are masked.</p>
+  </div>
+
+  <div role="tablist" style="display: flex; gap: 4px; border-bottom: 1px solid #E5E7EB">
+    <button role="tab" :class="vm.tabSchemaCls" @click="vm.showSchemaTab" :aria-selected="vm.tabSchemaSel">Field mapping</button>
+    <button role="tab" :class="vm.tabCodeCls" @click="vm.showCodeTab" :aria-selected="vm.tabCodeSel">Generated code</button>
+  </div>
+
+  <template v-if="vm.tabSchema">
+    <div style="border: 1px solid #E5E7EB; border-radius: 12px; overflow-x: auto">
+      <div style="min-width: 780px">
+        <div class="grid-row grid-head">
+          <span>Standard field</span><span>From Calendly</span><span>Sample (masked)</span><span>Confidence</span><span>Review</span>
+        </div>
+        <template v-for="(r, i_r) in vm.schema" :key="i_r">
+          <div :class="r.rowCls">
+            <span class="mono" style="font-size: 13px; font-weight: 500">{{ r.field }}</span>
+            <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+              <span class="mono" style="font-size: 12px; color: #374151">{{ r.from }}</span>
+              <template v-if="r.hasNote"><span class="xs" style="color: #92400E">{{ r.note }}</span></template>
+            </div>
+            <span class="small">{{ r.sample }}</span>
+            <span><span :class="r.confCls">{{ r.conf }}</span></span>
+            <span>
+              <template v-if="r.needsReview"><button class="btn btn-sm" @click="r.accept">Accept</button></template>
+              <template v-if="r.accepted"><span class="chip chip-ok">Accepted</span></template>
+              <template v-if="r.autoOk"><span class="muted xs">Auto-checked</span></template>
+              <template v-if="r.isChanged"><span class="chip">Changed by AI</span></template>
+            </span>
+          </div>
+        </template>
+      </div>
+    </div>
+  </template>
+
+  <template v-if="vm.tabCode">
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <div class="note note-info">
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="margin-top: 2px"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg>
+        <span>Read-only view for transparency. The connector runs in our managed runtime, so there is nothing to deploy and no code for you to maintain.</span>
+      </div>
+      <div class="code">
+        <template v-for="(l, i_l) in vm.codeLines" :key="i_l">
+          <div :class="l.cls">{{ l.t }}</div>
+        </template>
+      </div>
+    </div>
+  </template>
+
+  <div style="border: 1px solid #DDD3FE; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px; background: #FDFBFF">
+    <div style="display: flex; gap: 10px; align-items: center">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #6D28D9; width: 18px; height: 18px"><path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7-4.7-1.8 4.7-1.8z"></path></svg>
+      <span style="font-weight: 600">Refine with AI</span>
+      <span class="muted xs">Changes are logged in the draft history</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <template v-for="(m, i_m) in vm.msgs" :key="i_m">
+        <div :class="m.cls">{{ m.text }}</div>
+      </template>
+      <template v-if="vm.thinking">
+        <div class="bubble bubble-ai muted" style="display: flex; gap: 8px; align-items: center"><svg class="ic spin" viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px"><path d="M21 12a9 9 0 1 1-6.2-8.6"></path></svg>Updating the draft…</div>
+      </template>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <template v-for="(g, i_g) in vm.sugg" :key="i_g">
+        <button class="sugg" @click="g.click">{{ g.text }}</button>
+      </template>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap">
+      <label for="refine" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Describe a change</label>
+      <input id="refine" class="input" style="flex: 1 1 260px; width: auto" placeholder="e.g. the email field is profile.email" :value="vm.draft" @input="vm.onDraft">
+      <button class="btn" @click="vm.sendDraft">Send</button>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; border-top: 1px solid #EEF0F3; padding-top: 20px">
+    <button class="btn" @click="vm.toEndpoints">Back</button>
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap">
+      <template v-if="vm.hasReviewsLeft"><span class="small" style="color: #92400E">Accept {{ vm.reviewsLeft }} flagged field(s) to continue</span></template>
+      <template v-if="vm.hasReviewsLeft"><button class="btn btn-primary" disabled="disabled">Approve schema</button></template>
+      <template v-if="vm.noReviewsLeft"><button class="btn btn-primary" @click="vm.toConnect">Approve schema <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"></path></svg></button></template>
+    </div>
+  </div>
+</section>
+</template>
+
+
+<template v-if="vm.isConnect">
+<section class="card fade" style="display: flex; flex-direction: column; gap: 22px">
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <h2 style="font-size: 24px">Connect a test account</h2>
+    <p class="muted">Credentials go straight into an encrypted vault. The AI never sees them.</p>
+  </div>
+
+  <div>
+    <span class="label">Where should we test?</span>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px">
+      <button :class="vm.envCappedCls" @click="vm.pickCapped" :aria-pressed="vm.envCappedSel">
+        <span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span style="font-weight: 600">Capped read-only test</span><span class="chip">Recommended</span></span>
+        <span class="muted xs">Calendly has no sandbox. We read every page to count users but keep only a 50-user masked sample, deleted after 24 hours.</span>
+      </button>
+      <button :class="vm.envOrgCls" @click="vm.pickOrg" :aria-pressed="vm.envOrgSel">
+        <span style="font-weight: 600">Separate test organization</span>
+        <span class="muted xs">Use a second Calendly organization or a trial account.</span>
+      </button>
+      <button class="tile" disabled="disabled">
+        <span style="display: flex; gap: 8px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg><span style="font-weight: 600">Production</span></span>
+        <span class="xs">Unlocks after a passing test and admin approval.</span>
+      </button>
+    </div>
+  </div>
+
+  <div>
+    <span class="label">Authentication</span>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px">
+      <button :class="vm.authBearerCls" @click="vm.pickBearer" :aria-pressed="vm.authBearerSel">
+        <span style="font-weight: 600">Bearer token</span>
+        <span class="muted xs">Personal access token. Quickest for a test.</span>
+      </button>
+      <button :class="vm.authOauthCls" @click="vm.pickOauth" :aria-pressed="vm.authOauthSel">
+        <span style="font-weight: 600">OAuth 2.0</span>
+        <span class="muted xs">Sign in with Calendly. Best for production.</span>
+      </button>
+    </div>
+  </div>
+
+  <template v-if="vm.authBearer">
+    <div style="display: flex; flex-direction: column; gap: 14px">
+      <div style="border: 1px solid #E5E7EB; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+        <span style="font-weight: 600">How to get a token (steps found in Calendly's docs)</span>
+        <div class="small" style="display: flex; gap: 10px"><span class="dot" style="flex: none">1</span><span>In Calendly, open Integrations &amp; apps, then API and webhooks.</span></div>
+        <div class="small" style="display: flex; gap: 10px"><span class="dot" style="flex: none">2</span><span>Generate a personal access token.</span></div>
+        <div class="small" style="display: flex; gap: 10px"><span class="dot" style="flex: none">3</span><span>Create it from an admin service account rather than the organization owner.</span></div>
+      </div>
+      <div class="note">
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #B45309; margin-top: 2px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <span>Calendly personal tokens carry the account's full permissions, including write access. We enforce read-only at runtime, so any call other than GET is blocked before it leaves.</span>
+      </div>
+      <div>
+        <label class="label" for="token">Personal access token</label>
+        <input id="token" class="input mono" type="password" autocomplete="off" placeholder="Paste token" :value="vm.token" @input="vm.onToken">
+      </div>
+    </div>
+  </template>
+
+  <template v-if="vm.authOauth">
+    <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start">
+      <button class="btn" @click="vm.fakeOauth">Sign in with Calendly</button>
+      <span class="muted xs">We request read access only. The token is stored in the vault and refreshed automatically.</span>
+    </div>
+  </template>
+
+  <template v-if="vm.hasToken">
+    <div class="fade" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px">
+      <div class="note note-ok">
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="margin-top: 2px"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+        <span><strong>Stored in the vault.</strong> Referenced as vault://calendly/test. It never appears in code, logs or AI prompts.</span>
+      </div>
+      <div style="border: 1px solid #E5E7EB; border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px">
+        <span class="small" style="font-weight: 600">What the AI will see from responses</span>
+        <span class="mono xs" style="background: #F3F4F6; padding: 8px 10px; border-radius: 8px; word-break: break-all">{"email": "EMAIL_1", "name": "NAME_1", "role": "admin"}</span>
+        <span class="muted xs">Real names and emails are swapped for placeholders before anything reaches the model.</span>
+      </div>
+    </div>
+  </template>
+
+  <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-top: 1px solid #EEF0F3; padding-top: 20px">
+    <button class="btn" @click="vm.toSchema">Back</button>
+    <template v-if="vm.noToken"><button class="btn btn-primary" disabled="disabled">Continue to test</button></template>
+    <template v-if="vm.hasToken"><button class="btn btn-primary" @click="vm.toTest">Continue to test <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"></path></svg></button></template>
+  </div>
+</section>
+</template>
+
+
+<template v-if="vm.isTest">
+<section class="card fade" style="display: flex; flex-direction: column; gap: 20px">
+  <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: flex-start">
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <h2 style="font-size: 24px">Test before anything goes live</h2>
+      <p class="muted">Eight checks on real responses. A successful login isn't enough: the data has to be complete and correct.</p>
+    </div>
+    <template v-if="vm.testPassed"><span class="chip chip-ok">8 of 8 passed</span></template>
+    <template v-if="vm.testFailed"><span class="chip chip-bad">7 of 8 passed</span></template>
+  </div>
+
+  <template v-if="vm.testIdle">
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 16px; border-radius: 12px; background: #F8F5FF">
+      <button class="btn btn-primary" @click="vm.runTest">Run test</button>
+      <span class="muted small">Capped read-only test on your Calendly account · about a minute</span>
+    </div>
+  </template>
+
+  <div style="display: flex; flex-direction: column; gap: 2px; border: 1px solid #E5E7EB; border-radius: 12px; padding: 6px">
+    <template v-for="(c, i_c) in vm.checks" :key="i_c">
+      <div :class="c.cls">
+        <template v-if="c.isPending"><span class="ricon" style="width: 22px; height: 22px"></span></template>
+        <template v-if="c.isRunning"><svg class="ic spin" viewBox="0 0 24 24" aria-hidden="true" style="width: 22px; height: 22px; color: #6D28D9"><path d="M21 12a9 9 0 1 1-6.2-8.6"></path></svg></template>
+        <template v-if="c.isPass"><span class="ricon ricon-done" style="width: 22px; height: 22px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 12px; height: 12px; stroke-width: 3"><path d="M20 6 9 17l-5-5"></path></svg></span></template>
+        <template v-if="c.isFail"><span class="ricon" style="width: 22px; height: 22px; background: #C2410C; border-color: #C2410C; color: #fff"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 12px; height: 12px; stroke-width: 3"><path d="M18 6 6 18M6 6l12 12"></path></svg></span></template>
+        <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+          <span style="font-weight: 600">{{ c.name }}</span>
+          <span class="muted small">{{ c.detail }}</span>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <template v-if="vm.showFix">
+    <div class="fade" style="border: 1px solid #DDD3FE; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 14px; background: #FDFBFF">
+      <div style="display: flex; gap: 10px; align-items: center">
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #6D28D9; width: 18px; height: 18px"><path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7-4.7-1.8 4.7-1.8z"></path></svg>
+        <span style="font-weight: 600">AI found the cause</span>
+      </div>
+      <p>Login worked, but the data was incomplete. Calendly returns the next cursor in <span class="mono" style="font-size: 13px">pagination.next_page_token</span>. The draft read <span class="mono" style="font-size: 13px">pagination.next_page</span>, so the loop stopped after the first page. One-line fix:</p>
+      <div class="code" style="padding: 12px 0">
+        <div class="codeline" style="background: rgba(194,65,12,.25)">-  next_cursor="pagination.next_page",</div>
+        <div class="codeline" style="background: rgba(11,107,66,.35)">+  next_cursor="pagination.next_page_token",</div>
+      </div>
+      <div class="note note-info">
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="margin-top: 2px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <span>The AI can change the connector but not the tests. Accepting re-runs all 8 checks from scratch. A login-only connection test would have passed here.</span>
+      </div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap">
+        <button class="btn btn-primary" @click="vm.applyFix">Accept fix and re-run</button>
+        <button class="btn" @click="vm.editToast">Edit manually</button>
+      </div>
+    </div>
+  </template>
+
+  <template v-if="vm.testPassed">
+    <div class="fade" style="display: flex; flex-direction: column; gap: 16px">
+      <div>
+        <span class="label">Sample of what was pulled (masked)</span>
+        <div style="border: 1px solid #E5E7EB; border-radius: 12px; overflow-x: auto">
+          <div style="min-width: 620px">
+            <div style="display: grid; grid-template-columns: 1.2fr 1.6fr 0.9fr 0.9fr 1fr; gap: 12px; padding: 10px 16px; background: #F9FAFB; font: 600 12px Inter, sans-serif; color: #4B5563; text-transform: uppercase; letter-spacing: .04em">
+              <span>Name</span><span>Email</span><span>Role</span><span>Status</span><span>Last active</span>
+            </div>
+            <template v-for="(p, i_p) in vm.preview" :key="i_p">
+              <div style="display: grid; grid-template-columns: 1.2fr 1.6fr 0.9fr 0.9fr 1fr; gap: 12px; padding: 10px 16px; border-top: 1px solid #EEF0F3" class="small">
+                <span>{{ p.name }}</span><span class="mono xs">{{ p.email }}</span><span>{{ p.role }}</span><span>{{ p.status }}</span><span class="muted">{{ p.last }}</span>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <div style="border: 2px solid #6D28D9; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; gap: 10px; align-items: center"><span class="chip">Your check</span><span style="font-weight: 600">Does the count match Calendly?</span></div>
+        <p class="small">We pulled <strong>482 members</strong>. Open Calendly's admin page and compare. A person confirms this, not the AI.</p>
+        <template v-if="vm.reconcileNone">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap">
+            <button class="btn btn-primary btn-sm" @click="vm.reconcileYes">Yes, Calendly shows 482</button>
+            <button class="btn btn-sm" @click="vm.reconcileNo">No, it's different</button>
+          </div>
+        </template>
+        <template v-if="vm.reconcileMatch">
+          <div class="note note-ok"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="margin-top: 2px"><path d="M20 6 9 17l-5-5"></path></svg><span>Confirmed by you. Saved with the test evidence.</span></div>
+        </template>
+        <template v-if="vm.reconcileMismatch">
+          <div class="note"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #B45309; margin-top: 2px"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg><span>Kept in draft. The AI will compare page by page to find the missing users, and nothing goes to production until counts match. <button class="linkbtn" @click="vm.reconcileYes">Undo (demo)</button></span></div>
+        </template>
+      </div>
+    </div>
+  </template>
+
+  <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-top: 1px solid #EEF0F3; padding-top: 20px">
+    <button class="btn" @click="vm.toConnect">Back</button>
+    <template v-if="vm.cantApprove"><button class="btn btn-primary" disabled="disabled">Send for approval</button></template>
+    <template v-if="vm.canApprove"><button class="btn btn-primary" @click="vm.toApprove">Send for approval <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"></path></svg></button></template>
+  </div>
+</section>
+</template>
+
+
+<template v-if="vm.isApprove">
+<section class="card fade" style="display: flex; flex-direction: column; gap: 20px">
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <h2 style="font-size: 24px">Review and approve</h2>
+    <p class="muted">Everything an approver needs on one page. Production credentials are requested only after approval.</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px">
+    <div class="stat"><span class="muted xs">Endpoints</span><span style="font-weight: 600">{{ vm.epCount }} read · 3 writes blocked</span></div>
+    <div class="stat"><span class="muted xs">Schema</span><span style="font-weight: 600">{{ vm.fieldCount }} fields · 2 reviewed by you</span></div>
+    <div class="stat"><span class="muted xs">Auth</span><span style="font-weight: 600">{{ vm.authLabel }} · in vault</span></div>
+    <div class="stat"><span class="muted xs">Test evidence</span><span style="font-weight: 600">8/8 checks · 482 users confirmed</span></div>
+    <div class="stat"><span class="muted xs">AI changes</span><span style="font-weight: 600">{{ vm.aiChanges }}</span></div>
+    <div class="stat"><span class="muted xs">In production</span><span style="font-weight: 600">Sync every 6 h · max 20% of API limit</span></div>
+  </div>
+
+  <template v-if="vm.approvalNone">
+    <div style="border: 1px solid #E5E7EB; border-radius: 12px; padding: 18px; display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <span style="font-weight: 600">Approver: IT admin</span>
+        <span class="muted small">Builders can't approve their own connectors.</span>
+      </div>
+      <button class="btn btn-primary" @click="vm.requestApproval">Request approval</button>
+    </div>
+  </template>
+
+  <template v-if="vm.approvalPending">
+    <div class="fade" style="border: 1px solid #E5E7EB; border-radius: 12px; padding: 18px; display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap">
+      <div style="display: flex; gap: 10px; align-items: center">
+        <svg class="ic spin" viewBox="0 0 24 24" aria-hidden="true" style="width: 18px; height: 18px; color: #6D28D9"><path d="M21 12a9 9 0 1 1-6.2-8.6"></path></svg>
+        <span><strong>Waiting for IT admin.</strong> <span class="muted">They got the summary, test log and diff.</span></span>
+      </div>
+      <button class="btn btn-sm" @click="vm.simulateApprove" style="border-style: dashed">Demo: approve as IT admin</button>
+    </div>
+  </template>
+
+  <template v-if="vm.approvalApproved">
+    <div class="fade" style="display: flex; flex-direction: column; gap: 14px">
+      <div class="note note-ok"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="margin-top: 2px"><path d="M20 6 9 17l-5-5"></path></svg><span><strong>Approved by IT admin.</strong> Published as v1.</span></div>
+      <div style="border: 1px solid #E5E7EB; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+        <label class="label" for="prodtoken" style="margin: 0">Production token for Calendly</label>
+        <input id="prodtoken" class="input mono" type="password" autocomplete="off" placeholder="Paste production token" :value="vm.prodToken" @input="vm.onProdToken">
+        <span class="muted xs">Stored separately from the test token. The connector starts in shadow mode.</span>
+      </div>
+    </div>
+  </template>
+
+  <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-top: 1px solid #EEF0F3; padding-top: 20px">
+    <button class="btn" @click="vm.toTest">Back</button>
+    <template v-if="vm.cantGoLive"><button class="btn btn-primary" disabled="disabled">Go live in shadow mode</button></template>
+    <template v-if="vm.canGoLive"><button class="btn btn-primary" @click="vm.toLive">Go live in shadow mode <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"></path></svg></button></template>
+  </div>
+</section>
+</template>
+
+
+<template v-if="vm.isLive">
+<section class="card fade" style="display: flex; flex-direction: column; gap: 20px">
+  <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: flex-start">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+        <h2 style="font-size: 24px">Calendly connector</h2>
+        <span class="chip chip-dark">v1</span>
+        <template v-if="vm.notPaused"><span class="chip">Shadow mode · day 1 of 7</span></template>
+        <template v-if="vm.paused"><span class="chip chip-warn">Sync paused</span></template>
+      </div>
+      <p class="muted">Data is syncing and visible, but it won't drive license or access recommendations until shadow mode ends and the SSO comparison holds.</p>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center">
+      <span class="small" style="font-weight: 600">Sync</span>
+      <button :class="vm.switchCls" @click="vm.togglePause" :aria-pressed="vm.syncOnStr" aria-label="Pause or resume sync"><span class="knob"></span></button>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px">
+    <div class="stat"><span class="statnum">482</span><span class="muted small">users from the Calendly API</span></div>
+    <div class="stat"><span class="statnum">476</span><span class="muted small">assigned in Okta (SSO)</span></div>
+    <div class="stat"><span class="statnum" style="color: #B45309">6</span><span class="muted small">in Calendly but not in Okta</span></div>
+    <div class="stat"><span class="statnum">0</span><span class="muted small">sync errors · 3% of API limit</span></div>
+  </div>
+
+  <div class="note note-info">
+    <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="margin-top: 2px"><path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7-4.7-1.8 4.7-1.8z"></path></svg>
+    <span><strong>AI insight:</strong> 6 people have Calendly access with no Okta assignment, which means possible access outside SSO. They'll be flagged for review once shadow mode ends.</span>
+  </div>
+
+  <div role="tablist" style="display: flex; gap: 4px; border-bottom: 1px solid #E5E7EB; flex-wrap: wrap">
+    <button role="tab" :class="vm.ltHealthCls" @click="vm.ltHealth" :aria-selected="vm.ltHealthSel">Monitoring</button>
+    <button role="tab" :class="vm.ltVersionsCls" @click="vm.ltVersions" :aria-selected="vm.ltVersionsSel">Versions</button>
+    <button role="tab" :class="vm.ltAuditCls" @click="vm.ltAudit" :aria-selected="vm.ltAuditSel">Audit log</button>
+  </div>
+
+  <template v-if="vm.isLtHealth">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <template v-for="(mo, i_mo) in vm.monitors" :key="i_mo">
+        <div style="display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 12px 4px; border-bottom: 1px solid #F1F2F4">
+          <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+            <span style="font-weight: 600">{{ mo.title }}</span>
+            <span class="muted small">{{ mo.desc }}</span>
+          </div>
+          <span class="chip chip-ok">{{ mo.state }}</span>
+        </div>
+      </template>
+    </div>
+  </template>
+
+  <template v-if="vm.isLtVersions">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <template v-for="(v, i_v) in vm.versions" :key="i_v">
+        <div style="display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 12px 4px; border-bottom: 1px solid #F1F2F4; flex-wrap: wrap">
+          <div style="display: flex; gap: 12px; align-items: center; min-width: 0">
+            <span class="chip chip-mute" style="min-width: 64px; justify-content: center">{{ v.v }}</span>
+            <div style="display: flex; flex-direction: column; gap: 2px">
+              <span style="font-weight: 600">{{ v.title }}</span>
+              <span class="muted small">{{ v.desc }}</span>
+            </div>
+          </div>
+          <template v-if="v.current"><span class="chip chip-ok">Live</span></template>
+          <template v-if="v.old"><button class="btn btn-sm" @click="v.restore">Restore</button></template>
+        </div>
+      </template>
+    </div>
+  </template>
+
+  <template v-if="vm.isLtAudit">
+    <div style="display: flex; flex-direction: column">
+      <template v-for="(a, i_a) in vm.audit" :key="i_a">
+        <div style="display: flex; gap: 14px; padding: 10px 4px; border-bottom: 1px solid #F1F2F4; flex-wrap: wrap">
+          <span class="muted xs mono" style="min-width: 64px">{{ a.time }}</span>
+          <span class="chip chip-mute" style="min-width: 80px; justify-content: center">{{ a.who }}</span>
+          <span class="small" style="flex: 1 1 240px">{{ a.what }}</span>
+        </div>
+      </template>
+    </div>
+  </template>
+
+  <div style="border-top: 1px solid #EEF0F3; padding-top: 20px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center">
+    <span class="muted small">Something needs updating?</span>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap">
+      <template v-if="vm.supportNotRaised"><button class="btn" @click="vm.supportToast">Raise a support case</button></template>
+      <template v-if="vm.supportRaised"><span class="chip chip-ok" style="min-height: 44px; padding: 0 16px; font-size: 13px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 3; width: 14px; height: 14px"><path d="M20 6 9 17l-5-5"></path></svg>Support case raised</span></template>
+      <button class="btn btn-primary" @click="vm.newVersion">Create a new version with AI</button>
+    </div>
+  </div>
+
+  <template v-if="vm.supportRaised">
+    <div class="fade" role="status" style="border: 1px solid #BFE5CF; background: #ECF8F1; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+        <span class="ricon ricon-done"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 12px; height: 12px; stroke-width: 3"><path d="M20 6 9 17l-5-5"></path></svg></span>
+        <span style="font-weight: 600; color: #0B5134; font-size: 15px">Support case SC-20481 raised</span>
+        <span class="chip chip-mute">Priority: Normal</span>
+      </div>
+      <p class="small" style="color: #0B5134">The integrations team has everything they need. You'll get updates by email and on this page. Meanwhile the connector keeps running on v1.</p>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <span class="xs" style="font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: .04em">Attached automatically</span>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px">
+          <span class="small" style="display: flex; gap: 8px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #0B6B42"><path d="M20 6 9 17l-5-5"></path></svg>Connector config (v1)</span>
+          <span class="small" style="display: flex; gap: 8px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #0B6B42"><path d="M20 6 9 17l-5-5"></path></svg>Latest test results (8/8 checks)</span>
+          <span class="small" style="display: flex; gap: 8px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #0B6B42"><path d="M20 6 9 17l-5-5"></path></svg>Recent sync log (tokens and emails masked)</span>
+          <span class="small" style="display: flex; gap: 8px; align-items: center"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="color: #0B6B42"><path d="M20 6 9 17l-5-5"></path></svg>Audit trail</span>
+        </div>
+      </div>
+      <div><button class="btn btn-sm" @click="vm.viewCase">View case</button></div>
+    </div>
+  </template>
+</section>
+</template>
+
+</div>
+
+
+<template v-if="vm.showRail">
+<aside style="flex: 1 1 290px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+  <div class="card" style="padding: 20px">
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+      <div style="display: flex; gap: 8px; align-items: center">
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 18px; height: 18px; color: #0B6B42"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <h3 style="font-size: 16px">Safety gates</h3>
+      </div>
+      <span class="chip chip-ok">{{ vm.railCount }} of 8</span>
+    </div>
+    <p class="muted xs" style="margin: 6px 0 8px">Every connector passes the same gates, whether built by AI or by hand.</p>
+    <div style="display: flex; flex-direction: column">
+      <template v-for="(r, i_r) in vm.rail" :key="i_r">
+        <div :class="r.cls">
+          <template v-if="r.done"><span class="ricon ricon-done"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 12px; height: 12px; stroke-width: 3"><path d="M20 6 9 17l-5-5"></path></svg></span></template>
+          <template v-if="r.active"><span class="ricon ricon-active"><span class="pulse"></span></span></template>
+          <template v-if="r.todo"><span class="ricon"></span></template>
+          <div style="display: flex; flex-direction: column; gap: 1px; min-width: 0">
+            <span class="small" style="font-weight: 600">{{ r.title }}</span>
+            <span class="xs muted">{{ r.desc }}</span>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+  <div class="card" style="padding: 20px; background: #FAF7FF; border-color: #E9E1FF">
+    <span class="xs" style="font-weight: 600; color: #6D28D9; text-transform: uppercase; letter-spacing: .05em">Why this step</span>
+    <h3 style="font-size: 16px; margin: 6px 0">{{ vm.tipTitle }}</h3>
+    <p class="small muted">{{ vm.tipText }}</p>
+  </div>
+</aside>
+</template>
+
+</main>
+
+<footer style="max-width: 1360px; width: 100%; margin: auto auto 0; padding: 0 24px 24px" class="muted xs">Concept prototype by Nayeem for a product assignment. Calendly is the example app, and all account data is simulated.</footer>
+
+<template v-if="vm.hasToast">
+  <div class="toast" role="status">{{ vm.toast }}</div>
+</template>
+
+</div>
+</script>
+<script src="vendor/vue.global.prod.js"></script>
+<script>
+class DCLogic {
+  constructor(props) { this.props = props || {}; this.state = {}; }
+  setState(patch) { Object.assign(this.state, patch); }
+  forceUpdate() {}
+}
+var TRACE = [
+  { text: 'Read the API reference and found an OpenAPI spec', src: 'developer.calendly.com/api-docs' },
+  { text: 'Base URL: https://api.calendly.com', src: 'Getting started' },
+  { text: 'Auth: personal access token (Bearer) or OAuth 2.0', src: 'Authentication' },
+  { text: 'Users live under /organization_memberships, Calendly’s name for people in an organization', src: 'Organizations › List organization memberships' },
+  { text: 'Pagination is cursor-based: page_token plus count, up to 100 per page', src: 'Pagination' },
+  { text: 'Rate limits return HTTP 429, so the connector backs off and retries', src: 'Rate limits' },
+  { text: 'Last activity needs /activity_log_entries, which is Enterprise-plan only', src: 'Activity log', warn: true },
+  { text: 'No sandbox environment in the docs, so testing will use a capped read-only run', src: 'Searched: sandbox, test environment', warn: true },
+  { text: 'Self-check: all 5 endpoints exist in the spec, none invented. 3 write endpoints found and blocked.', src: 'Spec validation' }
+];
+
+var EP = [
+  { id: 'me', path: '/users/me', purpose: 'Finds your organization. Every other call needs it.', src: 'Users › Get current user', conf: 'High', locked: true },
+  { id: 'mem', path: '/organization_memberships', purpose: 'Users and their roles.', src: 'Organizations › List organization memberships', conf: 'High' },
+  { id: 'inv', path: '/organizations/{uuid}/invitations', purpose: 'Pending invites, which also hold seats.', src: 'Organizations › List organization invitations', conf: 'High' },
+  { id: 'act', path: '/activity_log_entries', purpose: 'Last activity per user, the main usage signal.', src: 'Activity log › List activity log entries', conf: 'Medium', warn: 'Enterprise plan only. If your plan lacks it, last activity stays empty instead of being guessed.' },
+  { id: 'evt', path: '/scheduled_events', purpose: 'Meetings per user, a deeper usage signal. Off by default.', src: 'Scheduled events › List events', conf: 'High' }
+];
+
+var CODE = [
+  '# Calendly connector · Draft 1 · generated from developer.calendly.com/api-docs',
+  '# Runs in the managed runtime. Nothing to deploy.',
+  '',
+  'class CalendlyConnector(BaseConnector):',
+  '    base_url = "https://api.calendly.com"',
+  '    auth = BearerToken(secret="vault://calendly/test")   # never in code or logs',
+  '    allowed_methods = ["GET"]                             # read-only guard',
+  '    retry = Backoff(on=[429, 500, 502, 503], header="Retry-After", max_tries=5)',
+  '    stop_on = [401, 403]                                  # fail loudly, never fake data',
+  '    log = StructuredLog(redact=["email", "name", "token"])',
+  '',
+  '    def organization(self):',
+  '        me = self.get("/users/me")',
+  '        return me["resource"]["current_organization"]',
+  '',
+  '    def users(self):',
+  '        for page in self.paginate(',
+  '            "/organization_memberships",',
+  '            params={"organization": self.organization(), "count": 100},',
+  '            cursor_param="page_token",',
+  '            next_cursor="pagination.next_page",',
+  '        ):',
+  '            for m in page["collection"]:',
+  '                yield to_standard_user(m)',
+  '',
+  'ROLE_MAP = {"owner": "Admin", "admin": "Admin", "user": "Member"}',
+  '',
+  'def to_standard_user(m):',
+  '    return User(',
+  '        external_id=m["user"]["uri"],',
+  '        email=m["user"]["email"],',
+  '        full_name=m["user"]["name"],',
+  '        role=ROLE_MAP[m["role"]],',
+  '        status="Active",',
+  '        created_at=m["created_at"],',
+  '    )'
+];
+
+var CHECKS = [
+  { name: 'Authentication', r1: '200 OK from /users/me', r2: '200 OK from /users/me' },
+  { name: 'Read-only guard', r1: '0 write calls. Anything other than GET is blocked.', r2: '0 write calls. Anything other than GET is blocked.' },
+  { name: 'Pagination completeness', r1: 'Stopped after page 1 (100 users) while the response still had a next-page token.', r2: 'Followed all 5 pages to the end: 482 users.', fail1: true },
+  { name: 'Schema validation', r1: 'Every record has an ID, email and valid role.', r2: 'Every record has an ID, email and valid role.' },
+  { name: 'Duplicates', r1: '0 duplicate users.', r2: '0 duplicate users across 5 pages.' },
+  { name: 'Rate limits', r1: 'One 429 received. Waited as instructed, then resumed.', r2: 'One 429 received. Waited as instructed, then resumed.' },
+  { name: 'Error handling', r1: 'Injected 500: retried. Injected 401: sync stopped, nothing written.', r2: 'Injected 500: retried. Injected 401: sync stopped, nothing written.' },
+  { name: 'Personal data masking', r1: 'The AI saw placeholders only: 0 raw emails or names.', r2: 'The AI saw placeholders only: 0 raw emails or names.' }
+];
+
+var ORDER = ['choice', 'source', 'analyze', 'endpoints', 'schema', 'connect', 'test', 'approve', 'live'];
+var LABELS = ['Docs', 'AI draft', 'Endpoints', 'Schema', 'Test account', 'Test', 'Approve', 'Live'];
+
+var TIPS = {
+  source: ['Small scope, small risk', 'The AI only drafts endpoints for the data you pick, which keeps permissions and the review short.'],
+  analyze: ['Grounded, not guessed', 'The model can only use what it retrieved from the docs. Each endpoint is checked against the spec, and invented ones are dropped.'],
+  endpoints: ['Read-only by default', 'Viewing users is safe. Removing them isn’t. Write actions stay off until someone enables them one by one, with approval.'],
+  schema: ['One standard record', 'Every app maps into the same user record, so license and access reports work the same everywhere. Customers no longer map fields by hand.'],
+  connect: ['Most apps have no sandbox', 'So the test reads production with a hard cap and read-only enforcement, then deletes the sample.'],
+  test: ['More than a connection test', 'Login can succeed while pagination silently drops users. Wrong data leads to wrong license removals, so completeness is checked too.'],
+  approve: ['Two people, not one', 'The builder and the approver are different roles. Production credentials are requested only after approval.'],
+  live: ['Shadow mode first', 'For 7 days the data is visible but drives no license or deprovisioning recommendations, while it’s compared with SSO data.']
+};
+
+class Component extends DCLogic {
+  constructor(a, b) {
+    super(a, b);
+    this.state = Object.assign({}, this.state || {}, {
+      screen: 'choice', docsUrl: 'https://developer.calendly.com/api-docs', source: 'calendly',
+      needs: { users: true, activity: true, seats: true }, hints: '',
+      aStep: 0, sel: { me: true, mem: true, inv: true, act: true, evt: false },
+      tab: 'schema', okStatus: false, okActivity: false, refineOwner: false, refineUsage: false, thinking: false,
+      msgs: [{ ai: true, text: 'Draft ready. I mapped 7 fields and flagged 2 where Calendly works differently from most apps. Ask me to change anything.' }],
+      draft: '', env: 'capped', auth: 'bearer', token: '',
+      phase: 'idle', tStep: 0, fixed: false, reconcile: '',
+      approval: 'none', prodToken: '', liveTab: 'health', paused: false, toast: ''
+    });
+    this.timers = [];
+  }
+
+  componentWillUnmount() {
+    this.timers.forEach(function (t) { clearTimeout(t); clearInterval(t); });
+  }
+
+  later(fn, ms) { this.timers.push(setTimeout(fn, ms)); }
+
+  say(msg) {
+    var self = this;
+    this.setState({ toast: msg });
+    clearTimeout(this.toastT);
+    this.toastT = setTimeout(function () { self.setState({ toast: '' }); }, 3600);
+    this.timers.push(this.toastT);
+  }
+
+  go(screen) {
+    this.setState({ screen: screen });
+    try { window.scrollTo(0, 0); } catch (e) {}
+  }
+
+  jump(si) {
+    var s = this.state;
+    var o = { screen: ORDER[si] };
+    if (si >= 2) o.aStep = TRACE.length;
+    if (si >= 5) { o.okStatus = true; o.okActivity = true; }
+    if (si >= 6 && !(s.token && s.token.length)) o.token = s.auth === 'oauth' ? 'oauth' : 'demo-token';
+    if (si >= 7) { o.phase = 'passed'; o.tStep = CHECKS.length; o.fixed = true; o.reconcile = 'match'; }
+    if (si >= 8) { o.approval = 'approved'; if (!s.prodToken) o.prodToken = 'demo-prod-token'; }
+    clearInterval(this.aT); clearInterval(this.tT);
+    this.setState(o);
+    try { window.scrollTo(0, 0); } catch (e) {}
+  }
+
+  doAnalyze() {
+    var self = this;
+    this.go('analyze');
+    this.setState({ aStep: 0 });
+    clearInterval(this.aT);
+    this.aT = setInterval(function () {
+      var n = self.state.aStep + 1;
+      self.setState({ aStep: n });
+      if (n >= TRACE.length) clearInterval(self.aT);
+    }, 650);
+    this.timers.push(this.aT);
+  }
+
+  doRunTest(second) {
+    var self = this;
+    this.setState({ phase: second ? 'run2' : 'run1', tStep: 0 });
+    clearInterval(this.tT);
+    this.tT = setInterval(function () {
+      var n = self.state.tStep + 1;
+      if (n >= CHECKS.length) {
+        clearInterval(self.tT);
+        self.setState({ tStep: n, phase: second ? 'passed' : 'failed' });
+      } else {
+        self.setState({ tStep: n });
+      }
+    }, 520);
+    this.timers.push(this.tT);
+  }
+
+  addMsg(ai, text, extra) {
+    var msgs = this.state.msgs.concat([{ ai: ai, text: text }]);
+    this.setState(Object.assign({ msgs: msgs }, extra || {}));
+  }
+
+  refine(kind) {
+    var self = this;
+    var text = kind === 'owner' ? 'Treat Calendly owners as Super Admin' : 'Add meetings in the last 30 days as a usage signal';
+    this.addMsg(false, text, { thinking: true });
+    this.later(function () {
+      if (kind === 'owner') {
+        self.addMsg(true, 'Done. Roles now map owner → Super Admin, admin → Admin, user → Member. The changed row is highlighted.', { refineOwner: true, thinking: false });
+      } else {
+        var sel = Object.assign({}, self.state.sel, { evt: true });
+        self.addMsg(true, 'Added meetings_30d from /scheduled_events (Docs › Scheduled events › List events). I also switched that endpoint on. It is read-only.', { refineUsage: true, sel: sel, thinking: false });
+      }
+    }, 900);
+  }
+
+  doSendDraft() {
+    var self = this;
+    var t = (this.state.draft || '').trim();
+    if (!t) return;
+    var msgs = this.state.msgs.concat([{ ai: false, text: t }]);
+    this.setState({ draft: '', msgs: msgs, thinking: true });
+    this.later(function () {
+      self.addMsg(true, 'In the product I’d apply this, cite the doc section I used and highlight the changed rows for your review. In this prototype, try a suggestion above to see a live change.', { thinking: false });
+    }, 900);
+  }
+
+  renderVals() {
+    var self = this;
+    var s = this.state;
+    var idx = ORDER.indexOf(s.screen);
+    var go = function (x) { return function () { self.go(x); }; };
+
+    var steps = LABELS.map(function (label, i) {
+      var si = i + 1;
+      var done = si < idx;
+      var cur = si === idx;
+      return {
+        label: label, num: String(si), done: done, notDone: !done,
+        current: cur ? 'step' : 'false',
+        cls: 'st' + (done ? ' st-done' : '') + (cur ? ' st-cur' : ''),
+        dotCls: 'dot' + (done ? ' dot-done' : '') + (cur ? ' dot-cur' : ''),
+        click: function () { self.jump(si); }
+      };
+    });
+
+    var needDefs = [
+      { k: 'users', title: 'Users and roles', desc: 'Who has access and at what level' },
+      { k: 'activity', title: 'Last activity', desc: 'Who actually uses the app' },
+      { k: 'seats', title: 'Seats and invites', desc: 'Licenses in use or pending' }
+    ];
+    var needs = needDefs.map(function (n) {
+      var on = !n.disabled && !!s.needs[n.k];
+      return {
+        title: n.title, desc: n.desc, on: on, offEnabled: !on && !n.disabled, disabled: !!n.disabled,
+        pressed: on ? 'true' : 'false',
+        cls: 'tile' + (on ? ' tile-on' : ''),
+        toggle: function () {
+          if (n.disabled) return;
+          var nd = Object.assign({}, s.needs); nd[n.k] = !nd[n.k];
+          self.setState({ needs: nd });
+        }
+      };
+    });
+
+    var analyzeDone = s.aStep >= TRACE.length;
+    var trace = TRACE.slice(0, s.aStep).map(function (t) {
+      return { text: t.text, src: t.src, warn: !!t.warn, ok: !t.warn };
+    });
+
+    var eps = EP.map(function (e) {
+      var on = !!s.sel[e.id];
+      return {
+        path: e.path, purpose: e.purpose, src: e.src, conf: e.conf, warn: e.warn || '',
+        on: on, off: !on, pressed: on ? 'true' : 'false', aria: 'Sync ' + e.path,
+        cls: 'ep' + (on ? ' ep-on' : ''), hasWarn: !!e.warn, locked: !!e.locked,
+        isAdded: e.id === 'evt' && s.refineUsage,
+        confCls: 'chip ' + (e.conf === 'High' ? 'chip-ok' : 'chip-warn'),
+        toggle: function () {
+          if (e.locked) { self.say('Required: every other call needs your organization ID.'); return; }
+          var sel = Object.assign({}, s.sel); sel[e.id] = !sel[e.id];
+          self.setState({ sel: sel });
+        }
+      };
+    });
+    var epCount = eps.filter(function (e) { return e.on; }).length;
+
+    var rows = [
+      { field: 'external_id', from: 'user.uri', sample: '…/users/AB12•••', conf: 'High' },
+      { field: 'email', from: 'user.email', sample: 'p•••@acme-test.io', conf: 'High' },
+      { field: 'full_name', from: 'user.name', sample: 'P••• S•••', conf: 'High' },
+      { field: 'role', from: 'role (mapped)', sample: s.refineOwner ? 'owner → Super Admin · admin → Admin · user → Member' : 'owner, admin → Admin · user → Member', conf: 'High', changed: s.refineOwner },
+      { field: 'status', from: 'membership → Active, invitation → Invited', sample: 'Active · Invited · Removed', conf: 'Medium', review: true, ok: s.okStatus, key: 'okStatus', note: 'Calendly has no suspended state. Users missing from a sync are marked Removed, not deleted.' },
+      { field: 'created_at', from: 'created_at', sample: '2025-03-14', conf: 'High' },
+      { field: 'last_active_at', from: 'latest activity_log_entries.occurred_at', sample: '2 days ago', conf: 'Medium', review: true, ok: s.okActivity, key: 'okActivity', note: 'Enterprise plan only. Left empty when unavailable, never estimated.' }
+    ];
+    if (s.refineUsage) rows.push({ field: 'meetings_30d', from: 'count of scheduled_events where host = user', sample: '14', conf: 'High', changed: true });
+    var schema = rows.map(function (r) {
+      var needsReview = !!r.review && !r.ok;
+      var accepted = !!r.review && !!r.ok;
+      return {
+        field: r.field, from: r.from, sample: r.sample, conf: r.conf, note: r.note || '',
+        hasNote: !!r.note, needsReview: needsReview, accepted: accepted,
+        autoOk: !r.review && !r.changed, isChanged: !!r.changed,
+        confCls: 'chip ' + (r.conf === 'High' ? 'chip-ok' : 'chip-warn'),
+        rowCls: 'grid-row' + (needsReview ? ' row-flag' : '') + (r.changed ? ' row-new' : ''),
+        accept: function () { var o = {}; o[r.key] = true; self.setState(o); }
+      };
+    });
+    var reviewsLeft = (s.okStatus ? 0 : 1) + (s.okActivity ? 0 : 1);
+
+    var msgs = s.msgs.map(function (m) { return { text: m.text, cls: 'bubble ' + (m.ai ? 'bubble-ai' : 'bubble-you') }; });
+    var sugg = [];
+    if (!s.refineOwner) sugg.push({ text: 'Treat Calendly owners as Super Admin', click: function () { self.refine('owner'); } });
+    if (!s.refineUsage) sugg.push({ text: 'Add meetings in the last 30 days as a usage signal', click: function () { self.refine('usage'); } });
+
+    var codeLines = CODE.map(function (t) {
+      return { t: t === '' ? ' ' : t, cls: 'codeline' + (t.indexOf('#') === 0 ? ' cm' : '') };
+    });
+
+    var running = s.phase === 'run1' || s.phase === 'run2';
+    var second = s.phase === 'run2' || s.phase === 'passed';
+    var checks = CHECKS.map(function (c, i) {
+      var st = 'pending';
+      var result = (second || !c.fail1) ? 'pass' : 'fail';
+      if (s.phase === 'idle') st = 'pending';
+      else if (running) st = i < s.tStep ? result : (i === s.tStep ? 'running' : 'pending');
+      else st = result;
+      var detail = st === 'pending' ? 'Waiting' : (st === 'running' ? 'Checking…' : (second ? c.r2 : c.r1));
+      return {
+        name: c.name, detail: detail,
+        isPending: st === 'pending', isRunning: st === 'running', isPass: st === 'pass', isFail: st === 'fail',
+        cls: 'chk chk-' + st
+      };
+    });
+    var testPassed = s.phase === 'passed';
+
+    var preview = [
+      { name: 'P••• S•••', email: 'p•••@acme-test.io', role: 'Admin', status: 'Active', last: '2 days ago' },
+      { name: 'R••• K•••', email: 'r•••@acme-test.io', role: 'Member', status: 'Active', last: 'Today' },
+      { name: 'M••• L•••', email: 'm•••@acme-test.io', role: 'Member', status: 'Active', last: '71 days ago' },
+      { name: 'A••• D•••', email: 'a•••@acme-test.io', role: 'Member', status: 'Invited', last: '—' },
+      { name: 'J••• T•••', email: 'j•••@acme-test.io', role: 'Admin', status: 'Active', last: '5 days ago' }
+    ];
+
+    var aiChangesParts = ['1 test fix'];
+    if (s.refineOwner) aiChangesParts.push('role mapping');
+    if (s.refineUsage) aiChangesParts.push('meetings field');
+    var aiChanges = aiChangesParts.join(', ') + ' · all accepted by you';
+
+    var monitors = [
+      { title: 'User count drop', desc: 'Alert if users fall by more than 10% between syncs', state: 'Watching' },
+      { title: 'Schema change', desc: 'Alert if Calendly adds, renames or removes a mapped field', state: 'Watching' },
+      { title: 'Auth failures', desc: 'Pause and alert on 401/403 instead of retrying', state: 'Watching' },
+      { title: 'API changelog', desc: 'The AI reads Calendly’s changelog weekly and drafts a fix if an endpoint is deprecated', state: 'Watching' },
+      { title: 'API budget', desc: 'Syncs stay under 20% of Calendly’s rate limit', state: '3% used' }
+    ];
+
+    var versions = [
+      { v: 'v1', title: 'Published', desc: 'Draft 2 plus admin approval', current: true, old: false, restore: function () {} },
+      { v: 'Draft 2', title: 'AI fix: pagination cursor', desc: 'Accepted by you after a failed completeness check', current: false, old: true, restore: function () { self.say('Restoring Draft 2 creates v2, which re-runs tests and needs approval again.'); } },
+      { v: 'Draft 1', title: 'Generated from docs', desc: 'First AI draft', current: false, old: true, restore: function () { self.say('Restoring Draft 1 creates v2, which re-runs tests and needs approval again.'); } }
+    ];
+
+    var audit = [
+      { time: '10:02', who: 'You', what: 'Started a connector from developer.calendly.com/api-docs' },
+      { time: '10:03', who: 'AI', what: 'Generated Draft 1: 4 read endpoints, 7 fields, 3 writes blocked' },
+      { time: '10:06', who: 'You', what: 'Accepted 2 flagged fields and approved the schema' },
+      { time: '10:08', who: 'System', what: 'Test token stored in vault. Capped read-only test started.' },
+      { time: '10:09', who: 'System', what: 'Test failed: pagination stopped at 100 users' },
+      { time: '10:09', who: 'AI', what: 'Proposed a one-line pagination fix (Draft 2)' },
+      { time: '10:10', who: 'You', what: 'Accepted fix. All 8 checks passed. Confirmed 482 users.' },
+      { time: '10:14', who: 'IT admin', what: 'Approved and published v1' },
+      { time: '10:15', who: 'System', what: 'Production connected. Shadow mode started (7 days).' }
+    ];
+    if (s.supportRaised) audit.push({ time: '10:20', who: 'You', what: 'Raised support case SC-20481 (config, test results and logs attached)' });
+
+    var hasToken = (s.auth === 'bearer' && s.token.length > 0) || (s.auth === 'oauth' && s.token === 'oauth');
+    var rail = [
+      { title: 'Grounded in docs', desc: 'Every AI choice links to its source. Invented endpoints are dropped.', done: analyzeDone && idx >= 2, active: s.screen === 'analyze' && !analyzeDone },
+      { title: 'Read-only by default', desc: 'Only GET calls. Writes are blocked at runtime.', done: idx >= 3, active: false },
+      { title: 'Secrets in a vault', desc: 'Tokens never appear in code, logs or AI prompts.', done: hasToken, active: s.screen === 'connect' && !hasToken },
+      { title: 'Personal data masked', desc: 'The AI sees placeholders, not real emails or names.', done: hasToken, active: false },
+      { title: 'Tested on real responses', desc: 'Eight checks, including completeness, not just login.', done: testPassed, active: s.screen === 'test' && !testPassed },
+      { title: 'Human count check', desc: 'You confirm the user count matches the app.', done: s.reconcile === 'match', active: testPassed && s.reconcile !== 'match' },
+      { title: 'Admin approval', desc: 'A second person approves before production.', done: s.approval === 'approved', active: s.screen === 'approve' && s.approval !== 'approved' },
+      { title: 'Shadow mode first', desc: '7 days visible, with no license actions yet.', done: s.screen === 'live', active: false }
+    ].map(function (r) {
+      var active = r.active && !r.done;
+      return { title: r.title, desc: r.desc, done: r.done, active: active, todo: !r.done && !active, cls: 'rail' + (r.done ? ' rail-done' : '') + (active ? ' rail-active' : '') };
+    });
+    var railCount = rail.filter(function (r) { return r.done; }).length;
+    var tip = TIPS[s.screen] || ['', ''];
+
+    var tile = function (on) { return 'tile' + (on ? ' tile-on' : ''); };
+    var tabCls = function (on) { return 'tab' + (on ? ' tab-on' : ''); };
+
+    return {
+      appName: s.source === 'soap' ? 'Legacy HR suite' : 'Calendly',
+      showStepper: s.screen !== 'choice', showRail: s.screen !== 'choice', steps: steps,
+      isChoice: s.screen === 'choice', isSource: s.screen === 'source', isAnalyze: s.screen === 'analyze',
+      isEndpoints: s.screen === 'endpoints', isSchema: s.screen === 'schema', isConnect: s.screen === 'connect',
+      isTest: s.screen === 'test', isApprove: s.screen === 'approve', isLive: s.screen === 'live',
+
+      toChoice: go('choice'), toSource: go('source'), toEndpoints: go('endpoints'), toSchema: go('schema'),
+      toConnect: go('connect'), toTest: go('test'), toApprove: go('approve'),
+      toLive: function () { self.go('live'); },
+      manualToast: function () { self.say('The manual builder opens the same steps with empty fields. The same tests and approval apply.'); },
+
+      docsUrl: s.docsUrl, hints: s.hints,
+      onDocs: function (e) { self.setState({ docsUrl: e.target.value }); },
+      onHints: function (e) { self.setState({ hints: e.target.value }); },
+      uploadToast: function () { self.say('Upload accepts PDF, HTML or an OpenAPI/Swagger file (JSON or YAML).'); },
+      useCalendly: function () { self.setState({ source: 'calendly', docsUrl: 'https://developer.calendly.com/api-docs' }); },
+      useSoap: function () { self.setState({ source: 'soap', docsUrl: 'https://legacy-hr.example.com/services/UserService?wsdl' }); },
+      needs: needs,
+      isSupported: s.source !== 'soap', isUnsupported: s.source === 'soap',
+      requestToast: function () { self.say('Request sent to the integrations team with the docs link attached.'); },
+      ssoToast: function () { self.say('Usage will come from SSO logins and browser signals until a connector exists.'); },
+      startAnalyze: function () { self.doAnalyze(); },
+
+      trace: trace, analyzing: !analyzeDone, analyzeDone: analyzeDone,
+
+      eps: eps, epCount: epCount,
+
+      tabSchema: s.tab === 'schema', tabCode: s.tab === 'code',
+      tabSchemaCls: tabCls(s.tab === 'schema'), tabCodeCls: tabCls(s.tab === 'code'),
+      tabSchemaSel: s.tab === 'schema' ? 'true' : 'false', tabCodeSel: s.tab === 'code' ? 'true' : 'false',
+      showSchemaTab: function () { self.setState({ tab: 'schema' }); },
+      showCodeTab: function () { self.setState({ tab: 'code' }); },
+      schema: schema, codeLines: codeLines, fieldCount: rows.length,
+      reviewsLeft: reviewsLeft, hasReviewsLeft: reviewsLeft > 0, noReviewsLeft: reviewsLeft === 0,
+      msgs: msgs, sugg: sugg, thinking: !!s.thinking, draft: s.draft,
+      onDraft: function (e) { self.setState({ draft: e.target.value }); },
+      sendDraft: function () { self.doSendDraft(); },
+
+      envCappedCls: tile(s.env === 'capped'), envOrgCls: tile(s.env === 'org'),
+      envCappedSel: s.env === 'capped' ? 'true' : 'false', envOrgSel: s.env === 'org' ? 'true' : 'false',
+      pickCapped: function () { self.setState({ env: 'capped' }); },
+      pickOrg: function () { self.setState({ env: 'org' }); },
+      authBearer: s.auth === 'bearer', authOauth: s.auth === 'oauth',
+      authBearerCls: tile(s.auth === 'bearer'), authOauthCls: tile(s.auth === 'oauth'),
+      authBearerSel: s.auth === 'bearer' ? 'true' : 'false', authOauthSel: s.auth === 'oauth' ? 'true' : 'false',
+      pickBearer: function () { self.setState({ auth: 'bearer', token: '' }); },
+      pickOauth: function () { self.setState({ auth: 'oauth', token: '' }); },
+      fakeOauth: function () { self.setState({ token: 'oauth' }); self.say('Signed in with Calendly (simulated). Read access granted.'); },
+      token: s.auth === 'bearer' ? s.token : '',
+      onToken: function (e) { self.setState({ token: e.target.value }); },
+      hasToken: hasToken, noToken: !hasToken,
+      authLabel: s.auth === 'oauth' ? 'OAuth 2.0' : 'Bearer token',
+
+      checks: checks, testIdle: s.phase === 'idle', testFailed: s.phase === 'failed', testPassed: testPassed,
+      showFix: s.phase === 'failed',
+      runTest: function () { self.doRunTest(false); },
+      applyFix: function () { self.setState({ fixed: true }); self.doRunTest(true); },
+      editToast: function () { self.say('Opens the wizard with every field filled in, so you can change the pagination setting yourself.'); },
+      preview: preview,
+      reconcileNone: !s.reconcile, reconcileMatch: s.reconcile === 'match', reconcileMismatch: s.reconcile === 'mismatch',
+      reconcileYes: function () { self.setState({ reconcile: 'match' }); },
+      reconcileNo: function () { self.setState({ reconcile: 'mismatch' }); },
+      cantApprove: !(testPassed && s.reconcile === 'match'), canApprove: testPassed && s.reconcile === 'match',
+
+      aiChanges: aiChanges,
+      approvalNone: s.approval === 'none', approvalPending: s.approval === 'pending', approvalApproved: s.approval === 'approved',
+      requestApproval: function () { self.setState({ approval: 'pending' }); },
+      simulateApprove: function () { self.setState({ approval: 'approved' }); },
+      prodToken: s.prodToken,
+      onProdToken: function (e) { self.setState({ prodToken: e.target.value }); },
+      cantGoLive: !(s.approval === 'approved' && s.prodToken.length > 0), canGoLive: s.approval === 'approved' && s.prodToken.length > 0,
+
+      paused: s.paused, notPaused: !s.paused, syncOnStr: s.paused ? 'false' : 'true',
+      switchCls: 'switch' + (s.paused ? '' : ' switch-on'),
+      togglePause: function () {
+        var p = !s.paused;
+        self.setState({ paused: p });
+        self.say(p ? 'Sync paused. Existing data is kept, and nothing new is pulled.' : 'Sync resumed.');
+      },
+      isLtHealth: s.liveTab === 'health', isLtVersions: s.liveTab === 'versions', isLtAudit: s.liveTab === 'audit',
+      ltHealthCls: tabCls(s.liveTab === 'health'), ltVersionsCls: tabCls(s.liveTab === 'versions'), ltAuditCls: tabCls(s.liveTab === 'audit'),
+      ltHealthSel: s.liveTab === 'health' ? 'true' : 'false', ltVersionsSel: s.liveTab === 'versions' ? 'true' : 'false', ltAuditSel: s.liveTab === 'audit' ? 'true' : 'false',
+      ltHealth: function () { self.setState({ liveTab: 'health' }); },
+      ltVersions: function () { self.setState({ liveTab: 'versions' }); },
+      ltAudit: function () { self.setState({ liveTab: 'audit' }); },
+      monitors: monitors, versions: versions, audit: audit,
+      supportToast: function () { self.setState({ supportRaised: true }); },
+      supportRaised: !!s.supportRaised, supportNotRaised: !s.supportRaised,
+      viewCase: function () { self.say('Opens case SC-20481 with its status and messages from the integrations team.'); },
+      newVersion: function () { self.say('Starts v2 from the current connector. The AI applies your change, then the same tests and approval run again.'); },
+
+      rail: rail, railCount: railCount, tipTitle: tip[0], tipText: tip[1],
+      hasToast: !!s.toast, toast: s.toast
+    };
+  }
+}
+(function () {
+  const comp = new Component({});
+  comp.state = Vue.reactive(comp.state);
+  Vue.createApp({
+    template: '#tpl',
+    computed: { vm() { return comp.renderVals(); } }
+  }).mount('#app');
+})();
+</script>
+</body>
+</html>
